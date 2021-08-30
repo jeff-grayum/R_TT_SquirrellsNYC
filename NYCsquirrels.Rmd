@@ -54,5 +54,57 @@ nyc_squirrels %>%
        title = "Colors of NYC squirrels") +
   theme_hc()
 
+nyc_squirrels %>%
+  filter(!is.na(primary_fur_color),
+         !is.na(age),
+         age != "?") %>%
+  count(primary_fur_color, age) %>%
+  mutate(primary_fur_color = fct_reorder(primary_fur_color, n, sum)) %>%
+  ggplot(aes(n, primary_fur_color, fill = age)) +
+  geom_col() +
+  scale_color_discrete() +
+  labs(x = " ",
+       y = "Primary fur color",
+       fill = "Age",
+       title = "Primary colors of NYC squirrels") +
+  theme_hc()
+
+nyc_squirrels %>%
+  filter(!is.na(specific_location)) %>%
+  count(specific_location, sort = TRUE) %>%
+  head(7) %>%
+  mutate(specific_location = fct_reorder(specific_location, n)) %>%
+  ggplot(aes(n, specific_location, fill = specific_location)) +
+  geom_col() +
+  labs(x = "",
+       y = "Location seen",
+       title = "Where we be seeing these squirrels?") +
+  theme_hc() +
+  theme(legend.position = "none")
+```
+
+
+Okidokie. Screencast time.
+```{r}
+nyc_squirrels %>%
+  ggplot(aes(long, lat)) +
+  geom_point() +
+  theme_map()
+
+by_hectare <- nyc_squirrels %>%
+  group_by(hectare) %>%
+  summarize(long = mean(long),
+            lat = mean(lat),
+            n = n()) 
+
+by_hectare %>%
+  ggplot(aes(long, lat, size = n)) +
+  geom_point() +
+  theme_map() +
+  theme(legend.position = "right") +
+  labs(title = "Squirrels in Central Park",
+       size = "# squirrels/hectare")
+
+
 ```
 
