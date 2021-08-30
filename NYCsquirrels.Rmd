@@ -17,6 +17,7 @@ library(tidyverse)
 library(tidytuesdayR)
 library(scales)
 library(ggthemes)
+library(ggmap)
 ```
 
 Loading datasets.   
@@ -182,12 +183,14 @@ nyc_squirrels %>%
 glm(runs_from ~ lat, data = nyc_squirrels, family = "binomial") %>%
   summary()
 
-nyc_squirrels %>%
+by_hectare <- nyc_squirrels %>%
   add_count(hectare) %>%
   group_by(hectare, n) %>%
   summarize_at(vars(long, lat, runs_from, indifferent), mean) %>%
   ungroup() %>%
-  filter(n >= 10) %>%
+  filter(n >= 10) 
+
+by_hectare %>%
   ggplot(aes(long, lat, size = n, color = runs_from)) +
   geom_point() +
   theme_map() +
@@ -202,6 +205,18 @@ nyc_squirrels %>%
 
                         
 
+#Let's try making a ggmap!
+by_hectare %>%
+  head(1) %>%
+  pull(long)
+
+by_hectare %>%
+  head(1) %>%
+  pull(lat)
+
+get_map(location = c(lon = -73.98, lat = 40.77))
+#Google requires an API key.... we dont have time for that.  And we're at a logical stopping point for the day.
+  
 
 
   
