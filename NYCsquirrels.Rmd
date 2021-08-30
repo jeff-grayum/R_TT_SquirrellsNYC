@@ -92,9 +92,11 @@ nyc_squirrels %>%
   theme_map()
 
 by_hectare <- nyc_squirrels %>%
+  filter(!is.na(primary_fur_color)) %>%
   group_by(hectare) %>%
   summarize(long = mean(long),
             lat = mean(lat),
+            pct_gray = mean(primary_fur_color == "Gray", na.rm = TRUE),
             n = n()) 
 
 by_hectare %>%
@@ -105,6 +107,71 @@ by_hectare %>%
   labs(title = "Squirrels in Central Park",
        size = "# squirrels/hectare")
 
+nyc_squirrels %>%
+  count(color_notes, sort = TRUE)
+
+nyc_squirrels %>%
+  count(primary_fur_color, sort = TRUE)
+
+nyc_squirrels %>%
+  count(primary_fur_color, highlight_fur_color, sort = TRUE)
+
+by_hectare %>%
+  filter(n >= 10) %>%
+  ggplot(aes(long, lat, size = n, color = pct_gray)) +
+  geom_point() +
+  theme_map() +
+  theme(legend.position = "right")
+
+by_hectare %>%
+  filter(n >= 10) %>%
+  ggplot(aes(lat, pct_gray)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x = "Latitude",
+       y = "% gray (primary fur color)",
+       title = "How does primary color change with latitude?",
+       subtitle = "Looking at squirells in Central Park") +
+  theme_tufte()
+
+by_hectare %>%
+  filter(n >= 10) %>%
+  ggplot(aes(long, pct_gray)) +
+  geom_point() +
+  geom_smooth() +
+  labs(x = "Longitude",
+       y = "% gray (primary fur color)",
+       title = "How does primary color change with longitude?",
+       subtitle = "Looking at squirells in Central Park") +
+  theme_tufte()
+
+by_hectare %>%
+  mutate(n_gray = round(pct_gray * n)) %>%
+  glm(cbind(n_gray, n - n_gray) ~ lat, data = ., family = "binomial") %>%
+  summary()
+
+#Positive estimate (lat 23.058), with sig pvalue (3.81e -06), Squirrels more likely to be gray as you move north!
+
+by_hectare %>%
+  mutate(n_gray = round(pct_gray * n)) %>%
+  glm(cbind(n_gray, n - n_gray) ~ long, data = ., family = "binomial") %>%
+  summary()
+
+#It seems like squirrels more likely to be gray as long increases, as well.
+
+
+#Lets look at behavior.
+nyc_squirrels %>%
+  count(approaches, sort = TRUE)
+
+nyc_squirrels %>%
+  count(indifferent, sort = TRUE)
+
+nyc_squirrels %>%
+  count(runs_from, sort = TRUE)
+
+nyc_squirrels %>%
+  count(approaches, indifferent, runs_from, sort = TRUE)
 
 ```
 
