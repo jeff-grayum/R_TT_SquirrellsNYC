@@ -1,0 +1,58 @@
+---
+title: "NYCsquirrels"
+author: "Jeff Grayum"
+date: "8/29/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Loading libraries.
+```{r}
+library(tidyverse)
+library(tidytuesdayR)
+library(scales)
+library(ggthemes)
+```
+
+Loading datasets.   
+```{r}
+nyc_squirrels <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-29/nyc_squirrels.csv")
+
+nyc_squirrels %>%
+  view()
+```
+
+Doing some stuff before watching the screencast.
+```{r}
+nyc_squirrels %>%
+  count(unique_squirrel_id, sort = TRUE)
+
+nyc_squirrels %>%
+  filter(unique_squirrel_id %in% "1F-AM-1010-04") %>%
+  view()
+
+nyc_squirrels %>%
+  count(highlight_fur_color, sort = TRUE)
+
+nyc_squirrels %>%
+  filter(!is.na(primary_fur_color),
+         !is.na(highlight_fur_color)) %>%
+  mutate(highlight_fur_color = fct_lump(highlight_fur_color, 4)) %>%
+  count(primary_fur_color, highlight_fur_color) %>%
+  mutate(primary_fur_color = fct_reorder(primary_fur_color, n, sum)) %>%
+  ggplot(aes(n, primary_fur_color, fill = highlight_fur_color)) +
+  geom_col() +
+  scale_color_discrete() +
+  labs(x = " ",
+       y = "Primary fur color",
+       fill = "Highlight fur color",
+       title = "Colors of NYC squirrels") +
+  theme_hc()
+
+```
+
