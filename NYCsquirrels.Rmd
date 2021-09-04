@@ -18,6 +18,7 @@ library(tidytuesdayR)
 library(scales)
 library(ggthemes)
 library(ggmap)
+library(sf)
 ```
 
 Loading datasets.   
@@ -216,6 +217,31 @@ by_hectare %>%
 
 get_map(location = c(lon = -73.98, lat = 40.77))
 #Google requires an API key.... we dont have time for that.  And we're at a logical stopping point for the day.
+  
+
+central_park_sf <- read_sf("~/Downloads/CentralAndProspectParks/")
+#HOLY CRAP IT WORKED
+
+ggplot(central_park_sf) +
+  geom_sf()
+#STUNNED
+
+ggplot(central_park_sf) +
+  geom_sf() +
+  geom_point(aes(long, lat, size = n, color = runs_from), data = by_hectare) 
+
+ggplot(by_hectare) +
+  geom_sf(data = central_park_sf) +
+  geom_point(aes(long, lat, size = n, color = runs_from)) +
+  theme_map() +
+  labs(size = "# squirrels",
+       color = "% runs away",
+       title = "Squirrels in the northwest corner of Central Park are more likely to run away",
+       subtitle = "Central Park, NYC") +
+  scale_color_gradient2(low = "blue", high = "red", mid = "pink",
+                        midpoint = 0.3, labels = scales::percent) +
+  theme(legend.position = "right")
+ 
   
 
 
