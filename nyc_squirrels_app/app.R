@@ -28,14 +28,15 @@ ui <- fluidPage(
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
+           
+            selectInput("variable",
+                        "Whaddat squirrel do:",
+                        choices = squirrel_variables),
             sliderInput("min_squirrels",
                         "Minimum squirrels:",
                         min = 1,
                         max = 30,
                         value = 10),
-            selectInput("variable",
-                        "Variable:",
-                        choices = squirrel_variables)
         ),
 
         # Show a plot of the generated distribution
@@ -53,16 +54,21 @@ server <- function(input, output) {
         
         var <- sym(input$variable)
         
-        by_hectare %>%
+        filtered <- by_hectare %>%
+            filter(n >= input$min_squirrels)
+        
+        midpoint <- mean(by_hectare[[input$variable]])
+        
+        filtered %>%
             filter(n >= input$min_squirrels) %>%
             ggplot() +
             geom_sf(data = central_park_sf) +
             geom_point(aes(long, lat, size = n, color = !!var)) +
             theme_map() +
             labs(size = "# squirrels",
-                 color = "") +
+                 color = paste("%", input$variable)) +
             scale_color_gradient2(low = "blue", high = "red", mid = "pink",
-                                  midpoint = 0.3, labels = scales::percent) +
+                                  midpoint = midpoint, labels = scales::percent) +
             theme(legend.position = "right") +
             coord_sf(datum = NA)
     })

@@ -278,12 +278,22 @@ nyc_squirrels %>%
 by_hectare <- nyc_squirrels %>%
   add_count(hectare) %>%
   group_by(hectare, n) %>%
-  summarize_at(vars(long, lat, runs_from, indifferent, ends_with("ing")), mean) %>%
+  summarize_at(vars(long, lat, approaches:runs_from, indifferent, ends_with("ing")), mean) %>%
   ungroup()
 ```
 
-Let's make a shiny app.
-```{r}
+Let's make a shiny app. 
+OK, we made a shiny app.
 
+Lets check some distributions
+```{r}
+by_hectare %>%
+  gather(variable, value, kuks:foraging) %>%
+  filter(n >= 10) %>%
+  ggplot(aes(value)) +
+  geom_histogram() +
+  facet_wrap(~variable)
+
+A lot of zeros...
 ```
 
