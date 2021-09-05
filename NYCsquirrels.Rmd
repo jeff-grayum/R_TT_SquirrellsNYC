@@ -230,7 +230,9 @@ ggplot(central_park_sf) +
   geom_sf() +
   geom_point(aes(long, lat, size = n, color = runs_from), data = by_hectare) 
 
-ggplot(by_hectare) +
+by_hectare %>%
+  filter(n >= 10) %>%
+  ggplot() +
   geom_sf(data = central_park_sf) +
   geom_point(aes(long, lat, size = n, color = runs_from)) +
   theme_map() +
@@ -277,7 +279,11 @@ by_hectare <- nyc_squirrels %>%
   add_count(hectare) %>%
   group_by(hectare, n) %>%
   summarize_at(vars(long, lat, runs_from, indifferent, ends_with("ing")), mean) %>%
-  ungroup() %>%
-  filter(n >= 10) 
+  ungroup()
+```
+
+Let's make a shiny app.
+```{r}
+
 ```
 
