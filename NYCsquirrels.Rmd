@@ -240,12 +240,44 @@ ggplot(by_hectare) +
        subtitle = "Central Park, NYC") +
   scale_color_gradient2(low = "blue", high = "red", mid = "pink",
                         midpoint = 0.3, labels = scales::percent) +
-  theme(legend.position = "right")
+  theme(legend.position = "right") +
+  coord_sf(datum = NA)
+
+central_park_sf %>%
+  summary()
  
   
+central_park_sf %>%
+  ggplot() +
+  geom_sf(aes(color = bicycle))
+
+central_park_sf %>%
+  ggplot() +
+  geom_sf(aes(color = foot))
+```
 
 
-  
+```{r}
+nyc_squirrels %>%
+  count(other_activities, sort = TRUE, name = "# squirrels")
 
+nyc_squirrels %>%
+  select(ends_with("ing"))
+
+nyc_squirrels %>%
+  gather(activity, doing, ends_with("ing")) %>%
+  view()
+
+nyc_squirrels %>%
+  gather(activity, doing, ends_with("ing")) %>%
+  filter(doing) %>%
+  count(activity, sort = TRUE)
+
+by_hectare <- nyc_squirrels %>%
+  add_count(hectare) %>%
+  group_by(hectare, n) %>%
+  summarize_at(vars(long, lat, runs_from, indifferent, ends_with("ing")), mean) %>%
+  ungroup() %>%
+  filter(n >= 10) 
 ```
 
